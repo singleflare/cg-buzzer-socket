@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "r": "nodemon index.js"
   },
-  "nodemonConfig":{
-    
+  "nodemonConfig": {
+    "ext": "js json css html"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +18,9 @@
     "howler": "^2.2.4",
     "nodemon": "^3.1.4",
     "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "http-server": "^14.1.1"
   }
 }

@@ -6,4 +6,17 @@
   font-size: 20px;
   display: block;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  border-style: none;
+
+  background-color: blue;
+  color: white;
+  margin: auto;
+}
+
+input {
+  display: block;
+  margin: auto;
+  width: 500px;
+  height: 50px;
+  font-size: 20px;
 }

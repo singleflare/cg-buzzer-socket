@@ -26,6 +26,7 @@
     let buzzInfo = ""
 
     document.getElementById('buzzer').addEventListener('click', function () {
+      document.getElementById('buzzer').classList.add('clicked')
       let answerContent = document.getElementById('message').value
       if (!buzzed) {
         buzzed = true
