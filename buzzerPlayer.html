@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Player</title>
+  <link href="styles.css" rel="stylesheet">
 </head>
 
 <body>
@@ -20,17 +21,29 @@
       src: ['sounds/buzz.mp3']
     });
 
-    const socket = io('/player');
+    const playerSocket = io('/player');
     let buzzed = false;
+    let buzzInfo = ""
+
     document.getElementById('buzzer').addEventListener('click', function () {
+      let answerContent = document.getElementById('message').value
       if (!buzzed) {
         buzzed = true
         document.getElementById('buzzer').innerText = 'Đã bấm chuông'
-        let buzzInfo = document.getElementById('name').value + " bấm chuông với câu trả lời: " + document.getElementById('message').value
-        socket.emit('buzzer', buzzInfo);
+        if (answerContent == "") {
+          console.log(answerContent)
+          buzzInfo = document.getElementById('name').value + " bấm chuông"
+        }
+        else {
+          console.log(answerContent)
+          buzzInfo = document.getElementById('name').value + " bấm chuông với câu trả lời: " + answerContent
+        }
+        playerSocket.emit('buzzer to host', buzzInfo);
+        playerSocket.emit('buzzer to players', buzzInfo);
       }
     });
-    socket.on('buzzer', (buzzInfo) => {
+
+    playerSocket.on('buzzer to players', (buzzInfo) => {
       //sound.play();
       const buzzPara = document.createElement('p')
       buzzPara.appendChild(document.createTextNode(buzzInfo))

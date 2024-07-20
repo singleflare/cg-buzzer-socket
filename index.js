@@ -22,21 +22,25 @@ app.get('/host', (req, res) => {
 
 //Socket namespaces
 const playerNamespace = ioServer.of('/player');
-playerNamespace.on('connection', (ioClient) => {
-  ioClient.join('players');
-  console.log('player connected');
-  ioClient.on('buzzer', (buzzInfo) => {
-    playerNamespace.emit('buzzer', buzzInfo);
-  });
-});
-
 const hostNamespace = ioServer.of('/host');
-hostNamespace.on('connection', (ioClient) => {
+
+playerNamespace.on('connection', (ioClientPlayer) => {
+  ioClientPlayer.join('players');
+  console.log('player connected');
+  ioClientPlayer.on('buzzer to host', (buzzInfo) => {
+    hostNamespace.emit('buzzer to host', buzzInfo);
+  });
+  ioClientPlayer.on('buzzer to players', (buzzInfo) => {
+    playerNamespace.emit('buzzer to players', buzzInfo);
+  });
+})
+
+hostNamespace.on('connection', (ioClientHost) => {
   console.log('host connected');
-  ioClient.on('buzzer', (buzzInfo) => {
+  ioClientHost.on('buzzer', (buzzInfo) => {
     hostNamespace.emit('buzzer', buzzInfo);
   });
-  ioClient.on('reset buzzer', (data) => {
+  ioClientHost.on('reset buzzer', (data) => {
     hostNamespace.emit('reset buzzer', data);
   })
 });

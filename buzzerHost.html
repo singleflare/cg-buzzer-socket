@@ -19,9 +19,16 @@
     var sound = new Howl({
       src: ['sounds/buzz.mp3']
     });
-    sound.play();
-    const socket = io('/host');
+    const playerSocket = io('/player');
+    const hostSocket = io('/host');
 
+    hostSocket.on('buzzer to host', (buzzInfo) => {
+      //sound.play();
+      const buzzPara = document.createElement('p')
+      buzzPara.appendChild(document.createTextNode("[HOST]" + buzzInfo))
+      const element = document.getElementById('buzzes')
+      element.appendChild(buzzPara)
+    });
   </script>
 </body>
 
