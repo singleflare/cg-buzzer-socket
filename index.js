@@ -12,10 +12,33 @@ app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'index.html'));
 });
 
-ioServer.on('connection', (ioClient) => {
+app.get('/player', (req, res) => {
+  res.sendFile(join(__dirname, 'buzzerPlayer.html'));
+});
+
+app.get('/host', (req, res) => {
+  res.sendFile(join(__dirname, 'buzzerHost.html'));
+});
+
+//Socket namespaces
+const playerNamespace = ioServer.of('/player');
+playerNamespace.on('connection', (ioClient) => {
+  ioClient.join('players');
+  console.log('player connected');
   ioClient.on('buzzer', (buzzInfo) => {
-    ioServer.emit('buzzer', buzzInfo);
+    playerNamespace.emit('buzzer', buzzInfo);
   });
+});
+
+const hostNamespace = ioServer.of('/host');
+hostNamespace.on('connection', (ioClient) => {
+  console.log('host connected');
+  ioClient.on('buzzer', (buzzInfo) => {
+    hostNamespace.emit('buzzer', buzzInfo);
+  });
+  ioClient.on('reset buzzer', (data) => {
+    hostNamespace.emit('reset buzzer', data);
+  })
 });
 
 server.listen(3000, () => {

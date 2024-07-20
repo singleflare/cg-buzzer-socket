@@ -8,32 +8,8 @@
 </head>
 
 <body>
-  <button id="buzzer">Chuông</button>
-  <input type="text" id="name" placeholder="Tên">
-  <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
-  <div id="buzzes"></div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
-  <script>
-    var sound = new Howl({
-      src: ['sounds/buzz.mp3']
-    });
-
-    const socket = io();
-    document.getElementById('buzzer').addEventListener('click', function () {
-      let buzzInfo = document.getElementById('name').value + " bấm chuông với câu trả lời: " + document.getElementById('message').value
-      socket.emit('buzzer', buzzInfo);
-    });
-    socket.on('buzzer', (buzzInfo) => {
-      sound.play();
-      console.log(buzzInfo)
-      const buzzPara = document.createElement('p')
-      const BuzzInfo = document.createTextNode(buzzInfo)
-      buzzPara.appendChild(BuzzInfo)
-      const element = document.getElementById('buzzes')
-      element.appendChild(buzzPara)
-    });
-  </script>
+  <a href="localhost:3000/player">Player</a>
+  <a href="localhost:3000/host">Host</a>
 </body>
 
 </html>

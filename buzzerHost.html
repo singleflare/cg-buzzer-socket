@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host</title>
+</head>
+
+<body>
+  <button id="buzzer">Chuông</button>
+  <input type="text" id="name" placeholder="Tên">
+  <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
+  <p>Danh sách chuông:</p>
+  <div id="buzzes"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
+  <script>
+    var sound = new Howl({
+      src: ['sounds/buzz.mp3']
+    });
+    sound.play();
+    const socket = io('/host');
+
+  </script>
+</body>
+
+</html>

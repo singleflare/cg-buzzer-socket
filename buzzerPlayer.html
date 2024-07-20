@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player</title>
+</head>
+
+<body>
+  <button id="buzzer">Chuông</button>
+  <input type="text" id="name" placeholder="Tên">
+  <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
+  <p>Danh sách chuông:</p>
+  <div id="buzzes"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
+  <script>
+    var sound = new Howl({
+      src: ['sounds/buzz.mp3']
+    });
+
+    const socket = io('/player');
+    let buzzed = false;
+    document.getElementById('buzzer').addEventListener('click', function () {
+      if (!buzzed) {
+        buzzed = true
+        document.getElementById('buzzer').innerText = 'Đã bấm chuông'
+        let buzzInfo = document.getElementById('name').value + " bấm chuông với câu trả lời: " + document.getElementById('message').value
+        socket.emit('buzzer', buzzInfo);
+      }
+    });
+    socket.on('buzzer', (buzzInfo) => {
+      //sound.play();
+      const buzzPara = document.createElement('p')
+      buzzPara.appendChild(document.createTextNode(buzzInfo))
+      const element = document.getElementById('buzzes')
+      element.appendChild(buzzPara)
+    });
+  </script>
+</body>
+
+</html>
