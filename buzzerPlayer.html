@@ -12,7 +12,28 @@
   <button id="buzzer">Chuông</button>
   <input type="text" id="name" placeholder="Tên">
   <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
-  <p>Danh sách chuông:</p>
+  <table id="playersTable">
+    <tr>
+      <th>Người chơi</th>
+    </tr>
+    <tr>
+      <td>Người chơi</td>
+    </tr>
+    <tr>
+      <td>Người chơi</td>
+    </tr>
+  </table>
+  <table id="buzzedTable">
+    <tr>
+      <th>Đã bấm chuông</th>
+    </tr>
+    <tr>
+      <td>Người chơi</td>
+    </tr>
+    <tr>
+      <td>Người chơi</td>
+    </tr>
+  </table>
   <div id="buzzes"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
@@ -23,22 +44,19 @@
 
     const playerSocket = io('/player');
     let buzzed = false;
-    let buzzInfo = ""
+    let buzzInfo = {
+      "player": "",
+      "answer": "",
+      "time": "11:11",
+    }
 
     document.getElementById('buzzer').addEventListener('click', function () {
       document.getElementById('buzzer').classList.add('clicked')
-      let answerContent = document.getElementById('message').value
       if (!buzzed) {
         buzzed = true
         document.getElementById('buzzer').innerText = 'Đã bấm chuông'
-        if (answerContent == "") {
-          console.log(answerContent)
-          buzzInfo = document.getElementById('name').value + " bấm chuông"
-        }
-        else {
-          console.log(answerContent)
-          buzzInfo = document.getElementById('name').value + " bấm chuông với câu trả lời: " + answerContent
-        }
+        buzzInfo.player = document.getElementById('name').value
+        buzzInfo.answer = document.getElementById('message').value
         playerSocket.emit('buzzer to host', buzzInfo);
         playerSocket.emit('buzzer to players', buzzInfo);
       }
@@ -47,7 +65,7 @@
     playerSocket.on('buzzer to players', (buzzInfo) => {
       //sound.play();
       const buzzPara = document.createElement('p')
-      buzzPara.appendChild(document.createTextNode(buzzInfo))
+      buzzPara.appendChild(document.createTextNode(buzzInfo.player))
       const element = document.getElementById('buzzes')
       element.appendChild(buzzPara)
     });

@@ -12,7 +12,13 @@
   <input type="text" id="name" placeholder="Tên">
   <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
   <p>Danh sách chuông:</p>
-  <div id="buzzes"></div>
+  <table id="buzzedList">
+    <tr>
+      <th>Người chơi</th>
+      <th>Đáp án</th>
+      <th>Thời gian</th>
+    </tr>
+  </table>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
   <script>
@@ -24,10 +30,13 @@
 
     hostSocket.on('buzzer to host', (buzzInfo) => {
       //sound.play();
-      const buzzPara = document.createElement('p')
-      buzzPara.appendChild(document.createTextNode("[HOST]" + buzzInfo))
-      const element = document.getElementById('buzzes')
-      element.appendChild(buzzPara)
+      document.getElementById('buzzedList').innerHTML += `
+      <tr>
+        <td>${buzzInfo.player}</td>
+        <td>${buzzInfo.answer}</td>
+        <td>${buzzInfo.time}</td>
+      </tr>
+      `
     });
   </script>
 </body>
