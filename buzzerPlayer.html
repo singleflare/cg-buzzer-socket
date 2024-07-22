@@ -9,9 +9,14 @@
 </head>
 
 <body>
-  <button id="buzzer">Chuông</button>
-  <input type="text" id="name" placeholder="Tên">
-  <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
+  <button id="buzzer" disabled>
+    <p id="buzzerTextInButton">Khóa</p>
+    <span id="secs">00</span><span>:</span><span id="tens">00</span>
+  </button>
+  <label for="name">Tên</label>
+  <input type="text" id="name">
+  <label for="message">(Tùy chọn) Đáp án</label>
+  <input type="text" id="message">
   <table id="playersTable">
     <tr>
       <th>Người chơi</th>
@@ -38,25 +43,64 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
   <script>
-    var sound = new Howl({
-      src: ['sounds/buzz.mp3']
-    });
+    let tensSpan = document.getElementById("tens")
+    let secsSpan = document.getElementById("secs")
+    let secs = 0;
+    let tens = 0;
+    let Interval;
+
+    function startTime() {
+      clearInterval(Interval);
+      Interval = setInterval(addTenthToTimer, 10);
+    }
+    function stopTime() {
+      clearInterval(Interval);
+    }
+    function resetTime() {
+      clearInterval(Interval);
+      tens = "00";
+      secs = "00";
+      tensSpan.innerText = tens;
+      secsSpan.innerText = secs;
+    }
+
+    function addTenthToTimer() {
+      tens++;
+      if (tens <= 9) {
+        tensSpan.innerText = "0" + tens;
+      }
+      if (tens > 9) {
+        tensSpan.innerText = tens;
+      }
+      if (tens > 99) {
+        secs++;
+        secsSpan.innerText = "0" + secs;
+        tens = 0;
+        tensSpan.innerText = "0" + 0;
+      }
+      if (secs > 9) {
+        secsSpan.innerText = secs;
+      }
+    }
 
     const playerSocket = io('/player');
     let buzzed = false;
+    let locked = false;
     let buzzInfo = {
       "player": "",
       "answer": "",
-      "time": "11:11",
+      "time": "",
     }
 
     document.getElementById('buzzer').addEventListener('click', function () {
       document.getElementById('buzzer').classList.add('clicked')
       if (!buzzed) {
         buzzed = true
-        document.getElementById('buzzer').innerText = 'Đã bấm chuông'
+        stopTime()
+        document.getElementById('buzzerTextInButton').innerText = 'Đã bấm chuông'
         buzzInfo.player = document.getElementById('name').value
         buzzInfo.answer = document.getElementById('message').value
+        buzzInfo.time = document.getElementById('secs').innerText + ":" + document.getElementById('tens').innerText
         playerSocket.emit('buzzer to host', buzzInfo);
         playerSocket.emit('buzzer to players', buzzInfo);
       }
@@ -69,6 +113,32 @@
       const element = document.getElementById('buzzes')
       element.appendChild(buzzPara)
     });
+
+    playerSocket.on('lock buzzer', () => {
+      document.getElementById('buzzerTextInButton').innerText = "Khóa"
+      document.getElementById('buzzer').disabled = true
+      console.log('locked')
+    })
+
+    playerSocket.on('unlock buzzer', () => {
+      document.getElementById('buzzerTextInButton').innerText = "Chuông"
+      document.getElementById('buzzer').disabled = false
+      console.log('unlocked')
+    })
+
+    playerSocket.on('run timer', () => {
+      startTime()
+    })
+
+    playerSocket.on('reset timer', () => {
+      resetTime()
+    })
+
+    playerSocket.on('reset buzzer', () => {
+      buzzed = false
+      document.getElementById('buzzerTextInButton').innerText = "Chuông"
+    })
+
   </script>
 </body>
 

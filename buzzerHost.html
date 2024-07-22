@@ -5,31 +5,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Host</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <button id="buzzer">Chuông</button>
-  <input type="text" id="name" placeholder="Tên">
-  <input type="text" id="message" placeholder="(Tùy chọn) Nhập đáp án của bạn">
-  <p>Danh sách chuông:</p>
+  <button id="buzzer">
+    <p id="buzzerTextInButton">Chuông</p>
+    <span id="secs">00</span><span>:</span><span id="tens">00</span>
+  </button>
+  <label for="name">Tên<input type="text" id="name" name="name" /></label>
+  <label for="message">(Tùy chọn) Đáp án<input type="text" id="message" name="message" /></label>
+  <button class="utilitiesBtn" id="lockBuzzerBtn">Mở chuông</button>
+  <button class="utilitiesBtn" id="runTimerBtn">Tính thời gian</button>
+  <button class="utilitiesBtn" id="openBuzzerAndRunTimerBtn">Mở chuông và tính thời gian</button>
+  <button class="utilitiesBtn" id="resetTimerBtn">Đặt lại thời gian</button>
+  <button class="utilitiesBtn" id="resetBuzzerBtn">Đặt lại chuông</button>
   <table id="buzzedList">
     <tr>
-      <th>Người chơi</th>
-      <th>Đáp án</th>
-      <th>Thời gian</th>
+      <th style="width:250px">Người chơi</th>
+      <th style="width:750px">Đáp án</th>
+      <th style="width:120px">Thời gian</th>
     </tr>
   </table>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
   <script>
-    var sound = new Howl({
-      src: ['sounds/buzz.mp3']
-    });
     const playerSocket = io('/player');
     const hostSocket = io('/host');
 
+    let buzzerLocked = true;
+
     hostSocket.on('buzzer to host', (buzzInfo) => {
-      //sound.play();
       document.getElementById('buzzedList').innerHTML += `
       <tr>
         <td>${buzzInfo.player}</td>
@@ -38,6 +44,44 @@
       </tr>
       `
     });
+
+    document.getElementById('lockBuzzerBtn').addEventListener('click', () => {
+      if (!buzzerLocked) {
+        buzzerLocked = true
+        document.getElementById('lockBuzzerBtn').innerText = "Mở chuông"
+        hostSocket.emit('lock buzzer')
+      }
+      else {
+        buzzerLocked = false
+        document.getElementById('lockBuzzerBtn').innerText = "Khóa chuông"
+        hostSocket.emit('unlock buzzer')
+      }
+    })
+
+    document.getElementById('runTimerBtn').addEventListener('click', () => {
+      hostSocket.emit('run timer')
+    })
+
+    document.getElementById('openBuzzerAndRunTimerBtn').addEventListener('click', () => {
+      //click this will also change lockBuzzerBtn to "Khóa chuông"
+      if (buzzerLocked) {
+        buzzerLocked = false
+        document.getElementById('lockBuzzerBtn').innerText = "Khóa chuông"
+        hostSocket.emit('unlock buzzer')
+        hostSocket.emit('run timer')
+      }
+    })
+
+    document.getElementById('resetTimerBtn').addEventListener('click', () => {
+      hostSocket.emit('reset timer')
+    })
+
+    document.getElementById('resetBuzzerBtn').addEventListener('click', () => {
+      hostSocket.emit('reset buzzer')
+    })
+
+    //TODO: Separate reset timer, lock buzzer and reset buzzer
+
   </script>
 </body>
 

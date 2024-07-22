@@ -40,8 +40,20 @@ hostNamespace.on('connection', (ioClientHost) => {
   ioClientHost.on('buzzer', (buzzInfo) => {
     hostNamespace.emit('buzzer', buzzInfo);
   });
+  ioClientHost.on('lock buzzer', () => {
+    playerNamespace.emit('lock buzzer')
+  })
+  ioClientHost.on('unlock buzzer', () => {
+    playerNamespace.emit('unlock buzzer')
+  })
+  ioClientHost.on('run timer', () => {
+    playerNamespace.emit('run timer')
+  })
+  ioClientHost.on('reset timer', () => {
+    playerNamespace.emit('reset timer')
+  })
   ioClientHost.on('reset buzzer', (data) => {
-    hostNamespace.emit('reset buzzer', data);
+    playerNamespace.emit('reset buzzer', data);
   })
 });
 
